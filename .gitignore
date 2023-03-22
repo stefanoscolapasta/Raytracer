@@ -2,3 +2,5 @@
 *.exe
 *.ppm
 /out
+./src/*.ppm
+./src/*.exe
