@@ -10,12 +10,12 @@ void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
     auto g = pixel_color.y();
     auto b = pixel_color.z();
 
-    //Now we divide the color by the number of samples
+    //Now we divide the color by the number of samples and do gamma-correction for gamma=2.0
     auto scale = 1.0 / samples_per_pixel;
-
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    //why sqrt? because gamma correction means elevate to 1/gamma --> ^(1/2) = sqrt
+    r = sqrt(scale * r);
+    g = sqrt(scale * g);
+    b = sqrt(scale * b);
 
     // Write the translated [0,256) value of each color component. we can get up to 255.999
     out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '

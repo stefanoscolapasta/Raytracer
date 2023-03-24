@@ -33,7 +33,9 @@ color ray_color(const ray& r, const hittable& world, int depth){
     if (depth <= 0)
         return color(0,0,0); //means we will not be gathering more light
 
-    if (world.hit(r, 0, infinity, rec)){
+    //0.001 to solve the shadow acne problem to make for floating point approximation, this actually solves EVERYTHING
+    //TODO: investigate further HOW changing the t_min from 0 to 0.001 totally changes the brightness outcome
+    if (world.hit(r, 0.001, infinity, rec)){
         //What we are doing here in simple is: we have the point of intersection, we sum the normal to get to the center of the unit sphere
         //then we generate this random IN unit vector (not unit vector!). This means that now we obtain a random point that lies inside
         //the tangent sphere to the intersection point with center obtained with the normal, this is used for diffuse random scattering
