@@ -4,7 +4,7 @@
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
-
+#include "material.h"
 #include <iostream>
 
 //With this we are calculating whether a ray intersects with a sphere that has a certain radius and center(not only (0,0,0))
@@ -39,11 +39,21 @@ color ray_color(const ray& r, const hittable& world, int depth){
         //What we are doing here in simple is: we have the point of intersection, we sum the normal to get to the center of the unit sphere
         //then we generate this random IN unit vector (not unit vector!). This means that now we obtain a random point that lies inside
         //the tangent sphere to the intersection point with center obtained with the normal, this is used for diffuse random scattering
-        point3 target = rec.p + rec.normal + random_in_unit_sphere();
-        //As you can see, this is a recursive call to gather light from surroundings
-        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth-1); //TODO: the output of the diffuse does not look 100% like the reference image
-        //maybe it could be about the lambertian lazy hack that was later corrected, CHECK! Checked, probably not the case
-        //Output image looks too dark, but maybe not a problem
+        //to obtain rando point we switched from random_in_unit_sphere to random_unit_vector
+        //This makes the objects appear lighter because fewer rays are scattered toward the normal --> more are scattered toward the camera
+        //This decreases also the amount of light that gets trapped underneath objects, because as said before, less rays are scattered straight up
+        //As you remember, color of a point in this kind of material is gained by surroundings, if a light ray gets trapped it gets darker and darker
+        //In this case shadows are created for the vicinity of objects, not because there is a true light source.
+        
+        //OPTION1-> point3 target = rec.p + rec.normal + random_in_unit_sphere();
+        //OPTION2-> point3 target = rec.p + rec.normal + random_unit_vector();
+        
+        ray scattered;
+        color attenuation;
+        if(rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
+            return attenuation * ray_color(scattered, world, depth-1);
+        }
+        return color(0,0,0);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -60,9 +70,17 @@ int main() {
     const int max_depth = 50;
     //World
     hittable_list world;
+
+    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
+    auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
+    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8));
+    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2));
+
     //remember that camera looks along the -z, not z
-    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
-    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+    world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
     //Camera
     camera cam;

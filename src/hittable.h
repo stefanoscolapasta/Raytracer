@@ -2,11 +2,16 @@
 #define HITTABLE_H
 
 #include "ray.h"
+#include "rtweekend.h"
+
+//TODO: this is done to alert the compiler that material is a class, don't understand why I need to do it
+class material;
 
 //used to register information on every single hit found in the world
 struct hit_record {
     point3 p;
     vec3 normal;
+    shared_ptr<material> mat_ptr;    
     double t;
     bool front_face; //It's to know if ray is facing same direction of surface or not
 

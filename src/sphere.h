@@ -8,14 +8,18 @@ class sphere : public hittable{
     public:
         point3 center;
         double radius;
+        shared_ptr<material> mat_ptr;
 
         sphere() {}
-        sphere(point3 cen, double r) : center(cen), radius(r) {}
+        sphere(point3 cen, double r, shared_ptr<material> m) : center(cen), radius(r), mat_ptr(m) {}
 
-        virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+        virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override; //this is a declaration of the virtual func
 };
 
 // :: are used to dereference scopes.
+//this is the definition of the overriden virtual func
+//This definition could also be placed in the class to have declaration and definition in the same place
+//done like this to keep the class itself more readable, if function is small consider defining it inside
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center;
     auto a = r.direction().length_squared(); //Because it's equivalent to dot product of vector for itself
@@ -38,6 +42,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     rec.p = r.at(rec.t);
     vec3 outward_normal = unit_vector(rec.p - center);
     rec.set_face_normal(r, outward_normal);
+    rec.mat_ptr = mat_ptr;
     return true;
 }
 

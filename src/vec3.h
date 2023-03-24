@@ -55,6 +55,12 @@ class vec3{
         inline static vec3 random(double min, double max){
             return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
         }
+
+        bool near_zero() const {
+            const auto s = 1e-8;
+            return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+        }
+
 };
 
 using point3 = vec3; //3d point
@@ -108,11 +114,33 @@ inline vec3 unit_vector(vec3 v) {
 vec3 random_in_unit_sphere(){
     //TODO: couldn't I simply generate a random vector and then scale it down to the size of the unit sphere and then rescale it down randomly again?
     //Couldn't this save some computational time wasted by useles iterations?
+    //remember to think the origin of this vector not as the tangent point on surface but at the origin of sphere, then it makes mentally more sense
     while(true){
         auto p = vec3::random(-1,1); //see, here specify vec3:: to be sure it's right random() func
         if(p.length_squared() >= 1) continue;
         return p;
     }
+}
+
+vec3 random_unit_vector(){
+    //This way we get a point on the surface, not inside the sphere, this helps us achieve a Lambertian distribution of cos(Theta), instead of a cos^3(Theta)
+    //Considering every possible angle these methods can yield, they are different. In fact integration over surface or volume yield different results
+    return unit_vector(random_in_unit_sphere());
+}
+
+vec3 random_in_hemisphere(const vec3& normal){
+    //This gives a better approximation of a true lambertian diffuse, imagine it as instead of having a tangent sphere we now have half a sphere with
+    //the center corresponind to the intersection point of the ray with the surface
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    if (dot(in_unit_sphere, normal) > 0.0){ //This ensures the point is in the same hemisphere as the normal
+        return in_unit_sphere;
+    }else{
+        return -in_unit_sphere;
+    }
+}
+
+vec3 reflect(const vec3& v, const vec3& n){
+    return v - 2*dot(v,n)*n;
 }
 
 //Following the tutorial, the endif should have been placed  after the definition of the using statements
