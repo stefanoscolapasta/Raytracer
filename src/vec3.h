@@ -48,6 +48,13 @@ class vec3{
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
 
+        inline static vec3 random(){
+            return vec3(random_double(), random_double(), random_double());
+        }
+
+        inline static vec3 random(double min, double max){
+            return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+        }
 };
 
 using point3 = vec3; //3d point
@@ -95,6 +102,17 @@ inline vec3 cross(const vec3 &u, const vec3 &v) {
 
 inline vec3 unit_vector(vec3 v) {
     return v / v.length();
+}
+
+//We use this to generate a random vector for the diffuse lighting
+vec3 random_in_unit_sphere(){
+    //TODO: couldn't I simply generate a random vector and then scale it down to the size of the unit sphere and then rescale it down randomly again?
+    //Couldn't this save some computational time wasted by useles iterations?
+    while(true){
+        auto p = vec3::random(-1,1); //see, here specify vec3:: to be sure it's right random() func
+        if(p.length_squared() >= 1) continue;
+        return p;
+    }
 }
 
 //Following the tutorial, the endif should have been placed  after the definition of the using statements
