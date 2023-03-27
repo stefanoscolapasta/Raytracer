@@ -4,3 +4,9 @@ I am following the [Raytracer in one weekend](https://raytracing.github.io/books
 It's a personal project that serves me two functions: improve my C++ knowledge and improve my understanding of Computer Graphics and Raytracers.
 <br/><br/>
 ![](./res/metallicDiffuse.png)
+<br/>
+metallic and diffuse materials.
+<br/><br/>
+![](./res/far_shot.png)
+<br/>
+positionable camera and dielectric (glass) material.
