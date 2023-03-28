@@ -10,3 +10,7 @@ metallic and diffuse materials.
 ![](./res/far_shot.png)
 <br/>
 positionable camera and dielectric (glass) material.
+<br/><br/>
+![](./res/final_render.png)
+<br/>
+final render with different sphere of various sizes and materials. Depth of field was also implemented.
