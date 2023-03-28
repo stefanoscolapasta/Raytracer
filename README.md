@@ -14,3 +14,10 @@ positionable camera and dielectric (glass) material.
 ![](./res/final_render.png)
 <br/>
 final render with different sphere of various sizes and materials. Depth of field was also implemented.
+<br/><br/><br/><br/>
+### TODO
+- [ ] Add ray-triangle intersection
+- [ ] Add ray-plane intersection
+- [ ] Add a way to load external 3D models
+- [ ] Add scene interactivity
+- [ ] Make it real-time
